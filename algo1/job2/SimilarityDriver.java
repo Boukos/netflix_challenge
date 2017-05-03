@@ -1,4 +1,7 @@
-package preprocessing.si;
+package algo1.job2;
+
+import algo1.job1.IDPairWritable;
+import algo1.job1.StatsWritable;
 
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.conf.Configured;
@@ -11,9 +14,9 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class AvgDriver extends Configured implements Tool {
+public class SimilarityDriver extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
-		 int exitCode = ToolRunner.run(new Configuration(), new AvgDriver(), args);
+		 int exitCode = ToolRunner.run(new Configuration(), new SimilarityDriver(), args);
 		 System.exit(exitCode);
 	}
 
@@ -21,24 +24,24 @@ public class AvgDriver extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		
 		if (args.length != 2) {
-		      System.out.printf("Usage: AvgDriver <input dir> <output dir>\n");
+		      System.out.printf("Usage: SimilarityDriver <input dir> <output dir>\n");
 		      return -1;
 		}
 		
 		Job job = new Job(getConf());
-		job.setJarByClass(AvgDriver.class);
-	    job.setJobName("Average rating");
+		job.setJarByClass(SimilarityDriver.class);
+	    job.setJobName("Similarity Driver");
 	    
 	    FileInputFormat.setInputPaths(job, new Path(args[0]));
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    
-	    job.setMapperClass(RatingMapper.class);
-	    job.setReducerClass(AvgReducer.class);
+	    job.setMapperClass(SimilarityMapper.class);
+	    job.setReducerClass(SimilarityReducer.class);
 	    
 	    job.setMapOutputKeyClass(LongWritable.class);
-	    job.setMapOutputValueClass(DoubleWritable.class);
+	    job.setMapOutputValueClass(StatsPairWritable.class);
 	    
-	    job.setOutputKeyClass(LongWritable.class);
+	    job.setOutputKeyClass(IDPairWritable.class);
 	    job.setOutputValueClass(DoubleWritable.class);
 
 	    boolean success = job.waitForCompletion(true);
