@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 /**
  * This is the SumReducer class from the word count exercise.
  */ 
-public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, PairWritable, DoubleWritable> {
+public class CooccurrenceReducer extends Reducer<IDCompositeWritable, IDStatsWritable, IntWritable, DoubleWritable> {
 
   @Override
   public void reduce(LongWritable key, Iterable<DoubleWritable> values, Context context)

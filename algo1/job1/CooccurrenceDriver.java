@@ -24,7 +24,11 @@ public class CooccurrenceDriver extends Configured implements Tool {
 		      return -1;
 		}
 		
-		Job job = new Job(getConf());
+		// separate key/value with comma instead of default tab in output file
+		Configuration conf = getConf();
+		conf.set("mapred.textoutputformat.separator", ",");
+		
+		Job job = new Job(conf);
 		job.setJarByClass(CooccurrenceDriver.class);
 	    job.setJobName("Compute co-occurrence of movies");
 	    
