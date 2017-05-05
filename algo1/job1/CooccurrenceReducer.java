@@ -18,7 +18,6 @@ import org.apache.hadoop.mapreduce.Reducer;
  */ 
 public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, IDPairWritable, Text> {
 
-	private final List<IDStatsWritable> vals = new LinkedList<>();
 	private final Set<IDPairWritable> seenPairs = new HashSet<>();
 	private final IDPairWritable keyOut = new IDPairWritable();
 	private final Text valOut = new Text();
@@ -26,9 +25,11 @@ public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, I
 	@Override
 	public void reduce(IntWritable key, Iterable<IDStatsWritable> values, Context context)
 			throws IOException, InterruptedException {
+		List<IDStatsWritable> vals = new LinkedList<>();
 		for (IDStatsWritable i: values) {
 			vals.add(new IDStatsWritable(i.getId(), i.getSI(), i.getSumSI(), i.getNumSI()));
 		}
+		
 		
 		Collections.sort(vals, new Comparator<IDStatsWritable>() {
 			public int compare(IDStatsWritable w1, IDStatsWritable w2) {

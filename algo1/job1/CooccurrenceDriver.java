@@ -42,6 +42,12 @@ public class CooccurrenceDriver extends Configured implements Tool {
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    
 	    job.setMapperClass(CooccurrenceMapper.class);
+	    /*
+	    job.setNumReduceTasks(0);
+	    job.setOutputKeyClass(IntWritable.class);
+	    job.setOutputValueClass(IDStatsWritable.class);
+	    */
+	    
 	    job.setReducerClass(CooccurrenceReducer.class);
 	    
 	    job.setMapOutputKeyClass(IntWritable.class);
@@ -49,6 +55,7 @@ public class CooccurrenceDriver extends Configured implements Tool {
 	    
 	    job.setOutputKeyClass(IDPairWritable.class);
 	    job.setOutputValueClass(Text.class);
+	    
 
 	    boolean success = job.waitForCompletion(true);
 	    return success ? 0 : 1;
