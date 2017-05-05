@@ -1,5 +1,7 @@
 package step2.topN;
 
+import java.net.URI;
+
 import algo1.job1.IDPairWritable;
 import algo1.job2.SimilarityMapper;
 import algo1.job2.SimilarityReducer;
@@ -10,6 +12,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -30,7 +33,10 @@ public class PredictionDriver extends Configured implements Tool {
 		      return -1;
 		}
 		
-		Job job = new Job(getConf());
+	    Configuration conf = getConf();
+		conf.set("mapred.textoutputformat.separator", ",");
+		
+		Job job = new Job(conf);
 		job.setJarByClass(PredictionDriver.class);
 	    job.setJobName("Prediction Driver");
 	    
@@ -45,6 +51,16 @@ public class PredictionDriver extends Configured implements Tool {
 	    
 	    job.setOutputKeyClass(IDPairWritable.class);
 	    job.setOutputValueClass(DoubleWritable.class);
+	    
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00000#part-r-00000"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00001#part-r-00001"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00002#part-r-00002"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00003#part-r-00003"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00004#part-r-00004"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00005#part-r-00005"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00006#part-r-00006"), job.getConfiguration());
+
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/TestingRatings.txt#TestingRatings.txt"), job.getConfiguration());
 
 	    boolean success = job.waitForCompletion(true);
 	    return success ? 0 : 1;

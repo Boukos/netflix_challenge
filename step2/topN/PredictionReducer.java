@@ -23,8 +23,8 @@ import algo1.job1.Pair;
 public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPairWritable, DoubleWritable> {
 
 	private static int N = 30;
-	private static String TEST_DATA = "testMat.txt";
-	private static String SIM_DATA = "similarityMat.txt";
+	private static String TEST_DATA = "TestingRatings.txt";
+	private static String [] SIM_DATA = {"part-r-00000","part-r-00001","part-r-00002","part-r-00003","part-r-00004","part-r-00005","part-r-00006"};
 	
 	
 	private Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>(){
@@ -112,39 +112,42 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 	
 	private void getSimilarityData(){
 		similarities = new HashMap<Integer, List<Pair<Integer, Double>>>();
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(SIM_DATA));
-			String currLine;
-			while ((currLine = br.readLine()) != null) {
-				String[] split = currLine.split("\t");
-				if (split.length == 2) {
-					String[] ids = split[0].split(",");
-					int movie1 = Integer.parseInt(ids[0]);
-					int movie2 = Integer.parseInt(ids[1]);
-					double sim = Double.parseDouble(split[1]);
-					if (similarities.containsKey(movie1)){
-						similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
-					} else {
-						similarities.put(movie1, new ArrayList<Pair<Integer, Double>>());
-						similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
-					}
-					
-				}
-			}
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally {
+		for(int x=0; x<SIM_DATA.length; x++){
+			String filename = SIM_DATA[x];
+			BufferedReader br = null;
 			try {
-				if (br != null) br.close();
+				br = new BufferedReader(new FileReader(filename));
+				String currLine;
+				while ((currLine = br.readLine()) != null) {
+					String[] split = currLine.split("\t");
+					if (split.length == 2) {
+						String[] ids = split[0].split(",");
+						int movie1 = Integer.parseInt(ids[0]);
+						int movie2 = Integer.parseInt(ids[1]);
+						double sim = Double.parseDouble(split[1]);
+						if (similarities.containsKey(movie1)){
+							similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
+						} else {
+							similarities.put(movie1, new ArrayList<Pair<Integer, Double>>());
+							similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
+						}
+						
+					}
+				}
 			}
 			catch (IOException e) {
 				e.printStackTrace();
 			}
+			finally {
+				try {
+					if (br != null) br.close();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		
 		}
-		
-		
+
 	}
 }
