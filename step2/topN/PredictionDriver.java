@@ -37,11 +37,11 @@ public class PredictionDriver extends Configured implements Tool {
 	    FileInputFormat.setInputPaths(job, new Path(args[0]));
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    
-	    job.setMapperClass(SimilarityMapper.class);
-	    job.setReducerClass(SimilarityReducer.class);
+	    job.setMapperClass(PredictionMapper.class);
+	    job.setReducerClass(PredictionReducer.class);
 	    
 	    job.setMapOutputKeyClass(LongWritable.class);
-	    job.setMapOutputValueClass(StatsPairWritable.class);
+	    job.setMapOutputValueClass(IDSIWritable.class);
 	    
 	    job.setOutputKeyClass(IDPairWritable.class);
 	    job.setOutputValueClass(DoubleWritable.class);
