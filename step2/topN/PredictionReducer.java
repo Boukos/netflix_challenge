@@ -23,7 +23,7 @@ import algo1.job1.Pair;
  */ 
 public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWritable> {
 
-	private static int N = 25;
+	private static int N = 50;
 	private static String TEST_DATA = "TestingRatings.txt";
 	private static String [] SIM_DATA = {"part-r-00000","part-r-00001","part-r-00002","part-r-00003","part-r-00004","part-r-00005","part-r-00006"};
 	
@@ -45,36 +45,72 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
       getTestData();
       getSimilarityData();
       
-      for (Integer key: similarities.keySet()){
-    	  List<Pair<Integer, Double>> keyset = similarities.get(key);
-    	  for (Pair<Integer, Double> pair: keyset){
-    		  System.out.println("Key: " + key + "Movie: " + pair.getFirst());
-    	  }
-      }
+//      for (Integer key: similarities.keySet()){
+//    	  if(key%2==1){
+//    		  System.out.println("KEY: " + key);
+//    	  }
+//    	  if (key == 1333){
+//    		  List<Pair<Integer, Double>> keyset = similarities.get(key);
+//        	  for (Pair<Integer, Double> pair: keyset){
+//        		  System.out.println("Key: " + key + "Movie: " + pair.getFirst() + " SI: " + pair.getSecond());
+//        	  }
+//    	  }
+//
+//      }
     }
 	
 	@Override
 	public void reduce(IntWritable key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
-		simHeap.clear();
+		
 		//key is the user 
 		//values are the movies that user has rated
-		
+		//System.out.println("Key: " + key.get());
 		if(testRatings.get(key.get())!=null){
 			List<Integer> targets = testRatings.get(key.get());
 			//System.out.println(key.get());
 			for (Integer movieID: targets){
+				simHeap.clear();
 				//System.out.println("Target movie: " + movieID);
 				double num = 0;
 				double denom = 0;
+				/*if(key.get()==1333){
+					System.out.println("FOR KEY 1333");
+				for (Integer key1: similarities.keySet()){
+			    	  if(key1%2==1){
+			    		  System.out.println("KEY: " + key1);
+			    	  }
+			    	  if (key1 == 1333){
+			    		  List<Pair<Integer, Double>> keyset = similarities.get(key1);
+			        	  for (Pair<Integer, Double> pair: keyset){
+			        		  System.out.println("Key: " + key1 + "Movie: " + pair.getFirst() + " SI: " + pair.getSecond());
+			        	  }
+			    	  }
+
+			      }
+				}*/
+				//System.out.println("Movie ID: " + movieID);
 				if(similarities.get(movieID)==null){
 					System.out.println("similarities is null");
 					context.write(new Text(key.get() + "," + movieID), new DoubleWritable(0));
 				}else{
 					for(Pair<Integer, Double> simPair: similarities.get(movieID)){
 						simHeap.add(simPair);
-						if (simHeap.size() > N) simHeap.remove();
+						if (simHeap.size() > N){
+							simHeap.remove();
+						}
 					}
+					/*if (key.get() == 1333){
+						for (Pair<Integer, Double> pair: simHeap){
+							System.out.println(pair.getFirst() + " " + pair.getSecond());
+						}
+						System.out.println();
+						System.out.println();
+						System.out.println();
+						System.out.println();
+						System.out.println();
+						
+					}*/
 					//Now we have a top 30 list for simHeap 
 					
 					
@@ -89,6 +125,7 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 							}
 						}
 					}
+					//System.out.println("NUM,DENOM: " + num + " " + denom);
 					if(denom==0){
 						num=0;
 						denom=1;
@@ -116,11 +153,11 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 				if (split.length == 3) {
 					int movieid = Integer.parseInt(split[0]);
 					int userid = Integer.parseInt(split[1]);
-					if (testRatings.containsKey(movieid)){
-						testRatings.get(movieid).add(userid);
+					if (testRatings.containsKey(userid)){
+						testRatings.get(userid).add(movieid);
 					} else {
-						testRatings.put(movieid, new ArrayList<Integer>());
-						testRatings.get(movieid).add(userid);
+						testRatings.put(userid, new ArrayList<Integer>());
+						testRatings.get(userid).add(movieid);
 					}
 					
 				}
