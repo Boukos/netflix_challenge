@@ -39,7 +39,8 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 	private Map<Integer, List<Integer>> testRatings;
 	private Map<Integer, List<Pair<Integer, Double>>> similarities;
 	
-	protected void setup(Context context) throws IOException, InterruptedException {
+	@Override
+	public void setup(Context context) throws IOException, InterruptedException {
       getTestData();
       getSimilarityData();
     }
