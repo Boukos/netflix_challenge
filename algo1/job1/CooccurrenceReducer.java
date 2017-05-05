@@ -27,10 +27,9 @@ public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, I
 		for (IDStatsWritable i: values) {
 			vals.add(new IDStatsWritable(i.getId(), i.getSI(), i.getSumSI(), i.getNumSI()));
 		}
-		for (Iterator<IDStatsWritable> it1 = vals.iterator(); it1.hasNext();) {
-			IDStatsWritable w1 = it1.next();
-			for (Iterator<IDStatsWritable> it2 = vals.iterator(); it2.hasNext();) {
-				IDStatsWritable w2 = it2.next();
+		
+		for (IDStatsWritable w1: vals) {
+			for (IDStatsWritable w2: vals) {
 				if (w1.getId() != w2.getId()) {
 					keyOut.setMovieID1(w1.getId());
 					keyOut.setMovieID2(w2.getId());

@@ -28,7 +28,7 @@ public class CooccurrenceDriver extends Configured implements Tool {
 		
 		// separate key/value with comma instead of default tab in output file
 		Configuration conf = getConf();
-		conf.set("mapred.textoutputformat.separator", ",");
+		//conf.set("mapred.textoutputformat.separator", ",");
 		
 		Job job = new Job(conf);
 		job.setJarByClass(CooccurrenceDriver.class);
