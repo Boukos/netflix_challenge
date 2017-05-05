@@ -23,7 +23,7 @@ import algo1.job1.Pair;
 public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPairWritable, DoubleWritable> {
 
 	private static int N = 30;
-	private static String TEST_DATA = "TestRatings.txt";
+	private static String TEST_DATA = "TestingRatings.txt";
 	private static String [] SIM_DATA = {"part-r-00000","part-r-00001","part-r-00002","part-r-00003","part-r-00004","part-r-00005","part-r-00006"};
 	
 	
