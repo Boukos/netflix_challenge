@@ -22,7 +22,7 @@ import algo1.job1.Pair;
  */ 
 public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPairWritable, DoubleWritable> {
 
-	private static int N = 30;
+	private static int N = 25;
 	private static String TEST_DATA = "TestingRatings.txt";
 	private static String [] SIM_DATA = {"part-r-00000","part-r-00001","part-r-00002","part-r-00003","part-r-00004","part-r-00005","part-r-00006"};
 	
@@ -51,28 +51,29 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 		simHeap.clear();
 		//key is the user 
 		//values are the movies that user has rated
-		List<Integer> targets = testRatings.get(key);
-		for (Integer movieID: targets){
-			double num = 0;
-			double denom = 0;
-			for(Pair<Integer, Double> simPair: similarities.get(movieID)){
-				simHeap.add(simPair);
-				if (simHeap.size() > N) simHeap.remove();
-			}
-			//Now we have a top 30 list for simHeap 
-			
-			
-			for (IDSIWritable idsi: values){
-				for (Pair<Integer, Double> simPair: simHeap){
-					if (idsi.movieID == simPair.getFirst()){ //user has rated this similar movie
-						num += simPair.getSecond() * idsi.SI; //add weighted index params
-						denom += simPair.getSecond();
+		if(testRatings.get(key.get())!=null){
+			List<Integer> targets = testRatings.get(key.get());
+			for (Integer movieID: targets){
+				double num = 0;
+				double denom = 0;
+				for(Pair<Integer, Double> simPair: similarities.get(movieID)){
+					simHeap.add(simPair);
+					if (simHeap.size() > N) simHeap.remove();
+				}
+				//Now we have a top 30 list for simHeap 
+				
+				
+				for (IDSIWritable idsi: values){
+					for (Pair<Integer, Double> simPair: simHeap){
+						if (idsi.movieID == simPair.getFirst()){ //user has rated this similar movie
+							num += simPair.getSecond() * idsi.SI; //add weighted index params
+							denom += simPair.getSecond();
+						}
 					}
 				}
+				context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(num/denom));
 			}
-			context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(num/denom));
 		}
-		
 	}
 
 
