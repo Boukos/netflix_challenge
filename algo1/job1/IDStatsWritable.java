@@ -35,4 +35,7 @@ public class IDStatsWritable extends StatsWritable {
 		this.id = id;
 	}
 	
+	public String toString() {
+		return id + "," + getSI() + "," + getSumSI() + "," + getNumSI();
+	}
 }

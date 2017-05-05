@@ -74,4 +74,7 @@ public class IDPairWritable implements WritableComparable<IDPairWritable> {
 		this.movieID2 = movieID2;
 	}
 
+	public String toString() {
+		return movieID1 + "," + movieID2;
+	}
 }
