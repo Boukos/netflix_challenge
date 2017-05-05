@@ -1,7 +1,9 @@
 package algo1.job2;
 
 import algo1.job1.IDPairWritable;
-import algo1.job1.StatsWritable;
+import algo1.job2.SimilarityMapper;
+import algo1.job2.SimilarityReducer;
+import algo1.job2.StatsPairWritable;
 
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.conf.Configured;
