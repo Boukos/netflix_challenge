@@ -33,7 +33,10 @@ public class PredictionDriver extends Configured implements Tool {
 		      return -1;
 		}
 		
-		Job job = new Job(getConf());
+	    Configuration conf = getConf();
+		conf.set("mapred.textoutputformat.separator", ",");
+		
+		Job job = new Job(conf);
 		job.setJarByClass(PredictionDriver.class);
 	    job.setJobName("Prediction Driver");
 	    

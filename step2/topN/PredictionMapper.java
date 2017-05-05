@@ -23,11 +23,10 @@ public class PredictionMapper extends Mapper<LongWritable, Text, IntWritable, ID
 	
 	// the position of the key in the line
 	private static int MOVIE_ID = 0;
-	
+	private static int USER_ID = 1;
 	
 	// position of rating in the line
-	private static int USER_ID = 1;
-	private static int SI_INDEX = 0;
+	private static int SI_INDEX = 1;
 	
 	private static final String SIDE_DATA = "TestingRatings.txt";
 	
@@ -77,6 +76,7 @@ public class PredictionMapper extends Mapper<LongWritable, Text, IntWritable, ID
 		
 		int user_id = Integer.parseInt(keys[USER_ID]);
 		int movie_id = Integer.parseInt(keys[MOVIE_ID]);
+		
 		double si = Double.parseDouble(kv[SI_INDEX]);
 		
 		if(testUserID.contains(user_id)){
