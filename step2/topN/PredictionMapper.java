@@ -1,16 +1,24 @@
 package step2.topN;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper.Context;
 
-public class PredictionMapper extends Mapper<LongWritable, Text, LongWritable, IDSIWritable> {
+import algo1.job1.Pair;
+
+public class PredictionMapper extends Mapper<IntWritable, Text, LongWritable, IDSIWritable> {
 
 	
 	// the position of the key in the line
@@ -21,15 +29,46 @@ public class PredictionMapper extends Mapper<LongWritable, Text, LongWritable, I
 	private static int USER_ID = 1;
 	private static int SI_INDEX = 0;
 	
+	private static final String SIDE_DATA = "TestingRatings.txt";
+	
 	private final LongWritable keyOut = new LongWritable();
 	private final IDSIWritable valOut = new IDSIWritable();
 
+	private final Set<Integer> testUserID = new HashSet<Integer>();
+		
+	@Override
+	public void setup(Context context) {
+		// load stats into memory
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(SIDE_DATA));
+			String currLine;
+			while ((currLine = br.readLine()) != null) {
+				String[] split = currLine.split(",");
+				if (split.length == 3) {
+					int userid = Integer.parseInt(split[1]);
+					testUserID.add(userid);
+				}
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (br != null) br.close();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	/*
 	 * emits either movieid or userid for the key, and the rating for the value
 	 */
 	@Override
-	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+	public void map(IntWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String record = value.toString();
 		
 		String[] kv = record.split("\t");
@@ -40,11 +79,11 @@ public class PredictionMapper extends Mapper<LongWritable, Text, LongWritable, I
 		int movie_id = Integer.parseInt(keys[MOVIE_ID]);
 		double si = Double.parseDouble(kv[SI_INDEX]);
 		
-		
-		keyOut.set(user_id);
-		valOut.setmovieID(movie_id);
-		valOut.setSI(si);
-		
-		context.write(keyOut, valOut);
+		if(testUserID.contains(user_id)){
+			keyOut.set(user_id);
+			valOut.setmovieID(movie_id);
+			valOut.setSI(si);
+			context.write(keyOut, valOut);
+		}
 	}
 }
