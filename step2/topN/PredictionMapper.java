@@ -29,7 +29,7 @@ public class PredictionMapper extends Mapper<IntWritable, Text, LongWritable, ID
 	private static int USER_ID = 1;
 	private static int SI_INDEX = 0;
 	
-	private static final String SIDE_DATA = "TestingRatings.txt";
+	private static final String SIDE_DATA = "TestRatings.txt";
 	
 	private final LongWritable keyOut = new LongWritable();
 	private final IDSIWritable valOut = new IDSIWritable();
