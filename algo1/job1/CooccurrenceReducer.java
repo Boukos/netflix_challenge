@@ -1,6 +1,8 @@
 package algo1.job1;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
@@ -16,7 +18,6 @@ import org.apache.hadoop.mapreduce.Reducer;
  */ 
 public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, IDPairWritable, Text> {
 
-	private final List<IDStatsWritable> vals = new LinkedList<>();
 	private final Set<IDPairWritable> seenPairs = new HashSet<>();
 	private final IDPairWritable keyOut = new IDPairWritable();
 	private final Text valOut = new Text();
@@ -24,27 +25,32 @@ public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, I
 	@Override
 	public void reduce(IntWritable key, Iterable<IDStatsWritable> values, Context context)
 			throws IOException, InterruptedException {
+		List<IDStatsWritable> vals = new LinkedList<>();
 		for (IDStatsWritable i: values) {
 			vals.add(new IDStatsWritable(i.getId(), i.getSI(), i.getSumSI(), i.getNumSI()));
 		}
 		
-		for (IDStatsWritable w1: vals) {
-			for (IDStatsWritable w2: vals) {
-				if (w1.getId() != w2.getId()) {
-					keyOut.setMovieID1(w1.getId());
-					keyOut.setMovieID2(w2.getId());
-					if (!seenPairs.contains(keyOut)) {
-						seenPairs.add(new IDPairWritable(keyOut.getMovieID1(), keyOut.getMovieID2()));
-						valOut.set(
-								w1.getSI()
-								+ "," + w1.getSumSI()
-								+ "," + w1.getNumSI()
-								+ "," + w2.getSI()
-								+ "," + w2.getSumSI()
-								+ "," + w2.getNumSI());
-						context.write(keyOut, valOut);
-					}
-				}
+		
+		Collections.sort(vals, new Comparator<IDStatsWritable>() {
+			public int compare(IDStatsWritable w1, IDStatsWritable w2) {
+				return w1.getId() - w2.getId();
+			}
+		});
+		
+		for (int i = 0; i < vals.size(); i++) {
+			for (int j = i + 1; j < vals.size(); j++) {
+				IDStatsWritable w1 = vals.get(i);
+				IDStatsWritable w2 = vals.get(j);
+				keyOut.setMovieID1(w1.getId());
+				keyOut.setMovieID2(w2.getId());
+				valOut.set(
+						w1.getSI()
+						+ "," + w1.getSumSI()
+						+ "," + w1.getNumSI()
+						+ "," + w2.getSI()
+						+ "," + w2.getSumSI()
+						+ "," + w2.getNumSI());
+				context.write(keyOut, valOut);
 			}
 		}
 	}
