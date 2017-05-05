@@ -26,13 +26,13 @@ public class PredictionDriver extends Configured implements Tool {
 	public int run(String[] args) throws Exception {
 		
 		if (args.length != 2) {
-		      System.out.printf("Usage: SimilarityDriver <input dir> <output dir>\n");
+		      System.out.printf("Usage: PredictionDriver <input dir> <output dir>\n");
 		      return -1;
 		}
 		
 		Job job = new Job(getConf());
 		job.setJarByClass(PredictionDriver.class);
-	    job.setJobName("Similarity Driver");
+	    job.setJobName("Prediction Driver");
 	    
 	    FileInputFormat.setInputPaths(job, new Path(args[0]));
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
