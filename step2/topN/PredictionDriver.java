@@ -57,7 +57,7 @@ public class PredictionDriver extends Configured implements Tool {
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00005#part-r-00005"), job.getConfiguration());
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00006#part-r-00006"), job.getConfiguration());
 
-	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/TestingRating.txt#TestingRatings.txt"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/TestingRatings.txt#TestingRatings.txt"), job.getConfiguration());
 
 	    boolean success = job.waitForCompletion(true);
 	    return success ? 0 : 1;
