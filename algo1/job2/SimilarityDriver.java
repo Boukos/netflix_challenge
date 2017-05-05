@@ -40,7 +40,7 @@ public class SimilarityDriver extends Configured implements Tool {
 	    job.setMapperClass(SimilarityMapper.class);
 	    job.setReducerClass(SimilarityReducer.class);
 	    
-	    job.setMapOutputKeyClass(LongWritable.class);
+	    job.setMapOutputKeyClass(IDPairWritable.class);
 	    job.setMapOutputValueClass(StatsPairWritable.class);
 	    
 	    job.setOutputKeyClass(IDPairWritable.class);
