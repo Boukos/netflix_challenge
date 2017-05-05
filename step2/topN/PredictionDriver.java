@@ -15,6 +15,7 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -46,7 +47,7 @@ public class PredictionDriver extends Configured implements Tool {
 	    job.setMapperClass(PredictionMapper.class);
 	    job.setReducerClass(PredictionReducer.class);
 	    
-	    job.setMapOutputKeyClass(LongWritable.class);
+	    job.setMapOutputKeyClass(IntWritable.class);
 	    job.setMapOutputValueClass(IDSIWritable.class);
 	    
 	    job.setOutputKeyClass(IDPairWritable.class);
