@@ -22,11 +22,11 @@ public class SimilarityReducer extends Reducer<IDPairWritable, StatsPairWritable
 		
 		// counter to find length of list
 		int counter = 0;
-		System.out.println("KEY" + key);
-		System.out.println("COUNT: " + counter);
+//		System.out.println("KEY" + key);
+//		System.out.println("COUNT: " + counter);
 	    for (StatsPairWritable value : values) {
 	    	counter++;
-			System.out.println("VAL" + value);
+//			System.out.println("VAL" + value);
 	    	StatsWritable stats1 = value.getStats1();
 	    	StatsWritable stats2 = value.getStats2();
 	    	
@@ -47,7 +47,7 @@ public class SimilarityReducer extends Reducer<IDPairWritable, StatsPairWritable
 	    double corr = sumNum/(Math.sqrt(sumDenom1)*Math.sqrt(sumDenom2));
 	    
 	    if (counter > 1) {
-	    	System.out.println("Writing");
+//	    	System.out.println("Writing");
 	    	context.write(key, new DoubleWritable(corr));
 	    }
 	  }
