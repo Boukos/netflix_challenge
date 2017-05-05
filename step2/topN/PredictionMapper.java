@@ -18,7 +18,7 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 
 import algo1.job1.Pair;
 
-public class PredictionMapper extends Mapper<LongWritable, Text, IntWritable, IDSIWritable> {
+public class PredictionMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
 
 	
 	// the position of the key in the line
@@ -31,7 +31,7 @@ public class PredictionMapper extends Mapper<LongWritable, Text, IntWritable, ID
 	private static final String SIDE_DATA = "TestingRatings.txt";
 	
 	private final IntWritable keyOut = new IntWritable();
-	private final IDSIWritable valOut = new IDSIWritable();
+	private final Text valOut = new Text();
 
 	private final Set<Integer> testUserID = new HashSet<Integer>();
 		
@@ -78,11 +78,10 @@ public class PredictionMapper extends Mapper<LongWritable, Text, IntWritable, ID
 		int movie_id = Integer.parseInt(keys[MOVIE_ID]);
 		
 		double si = Double.parseDouble(kv[SI_INDEX]);
-		
+		String combinedvalue = "" + movie_id + "," + si;
 		if(testUserID.contains(user_id)){
 			keyOut.set(user_id);
-			valOut.setmovieID(movie_id);
-			valOut.setSI(si);
+			valOut.set(combinedvalue);
 			context.write(keyOut, valOut);
 		}
 	}

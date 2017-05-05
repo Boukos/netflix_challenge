@@ -17,6 +17,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -48,12 +49,12 @@ public class PredictionDriver extends Configured implements Tool {
 	    job.setReducerClass(PredictionReducer.class);
 	    
 	    job.setMapOutputKeyClass(IntWritable.class);
-	    job.setMapOutputValueClass(IDSIWritable.class);
+	    job.setMapOutputValueClass(Text.class);
 	    
-	    job.setOutputKeyClass(IDPairWritable.class);
+	    job.setOutputKeyClass(Text.class);
 	    job.setOutputValueClass(DoubleWritable.class);
 	    
-	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00000#part-r-00000"), job.getConfiguration());
+	    /*DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00000#part-r-00000"), job.getConfiguration());
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00001#part-r-00001"), job.getConfiguration());
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00002#part-r-00002"), job.getConfiguration());
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00003#part-r-00003"), job.getConfiguration());
@@ -61,7 +62,7 @@ public class PredictionDriver extends Configured implements Tool {
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00005#part-r-00005"), job.getConfiguration());
 	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/finalfather/part-r-00006#part-r-00006"), job.getConfiguration());
 
-	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/TestingRatings.txt#TestingRatings.txt"), job.getConfiguration());
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/TestingRatings.txt#TestingRatings.txt"), job.getConfiguration());*/
 
 	    boolean success = job.waitForCompletion(true);
 	    return success ? 0 : 1;

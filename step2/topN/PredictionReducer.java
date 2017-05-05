@@ -12,6 +12,7 @@ import java.util.PriorityQueue;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import algo1.job1.IDPairWritable;
@@ -20,7 +21,7 @@ import algo1.job1.Pair;
 /**
  * This is the SumReducer class from the word count exercise.
  */ 
-public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPairWritable, DoubleWritable> {
+public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWritable> {
 
 	private static int N = 25;
 	private static String TEST_DATA = "TestingRatings.txt";
@@ -36,28 +37,39 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 		
 	};
 	private PriorityQueue<Pair<Integer,Double>> simHeap = new PriorityQueue<Pair<Integer,Double>>(N, comp);
-	private Map<Integer, List<Integer>> testRatings;
-	private Map<Integer, List<Pair<Integer, Double>>> similarities;
+	private Map<Integer, List<Integer>> testRatings = new HashMap<Integer, List<Integer>>();
+	private Map<Integer, List<Pair<Integer, Double>>> similarities  = new HashMap<Integer, List<Pair<Integer, Double>>>();
 	
 	@Override
 	public void setup(Context context) throws IOException, InterruptedException {
       getTestData();
       getSimilarityData();
+      
+      for (Integer key: similarities.keySet()){
+    	  List<Pair<Integer, Double>> keyset = similarities.get(key);
+    	  for (Pair<Integer, Double> pair: keyset){
+    		  System.out.println("Key: " + key + "Movie: " + pair.getFirst());
+    	  }
+      }
     }
 	
 	@Override
-	public void reduce(IntWritable key, Iterable<IDSIWritable> values, Context context)
+	public void reduce(IntWritable key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
 		simHeap.clear();
 		//key is the user 
 		//values are the movies that user has rated
+		
 		if(testRatings.get(key.get())!=null){
 			List<Integer> targets = testRatings.get(key.get());
+			//System.out.println(key.get());
 			for (Integer movieID: targets){
+				//System.out.println("Target movie: " + movieID);
 				double num = 0;
 				double denom = 0;
 				if(similarities.get(movieID)==null){
-					context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(0));
+					System.out.println("similarities is null");
+					context.write(new Text(key.get() + "," + movieID), new DoubleWritable(0));
 				}else{
 					for(Pair<Integer, Double> simPair: similarities.get(movieID)){
 						simHeap.add(simPair);
@@ -66,10 +78,13 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 					//Now we have a top 30 list for simHeap 
 					
 					
-					for (IDSIWritable idsi: values){
+					for (Text value: values){
+						String [] splitData = value.toString().split(",");
+						int movID = Integer.parseInt(splitData[0]);
+						double si = Double.parseDouble(splitData[1]);
 						for (Pair<Integer, Double> simPair: simHeap){
-							if (idsi.movieID == simPair.getFirst()){ //user has rated this similar movie
-								num += simPair.getSecond() * idsi.SI; //add weighted index params
+							if (movID == simPair.getFirst()){ //user has rated this similar movie
+								num += simPair.getSecond() * si; //add weighted index params
 								denom += simPair.getSecond();
 							}
 						}
@@ -78,15 +93,20 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 						num=0;
 						denom=1;
 					}
-					context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(num/denom));
+					context.write(new Text(key.get() + "," + movieID), new DoubleWritable(num/denom));
 				}
 			}
 		}
+		
+//		for (Text value: values){
+//			String [] valueMovieID = value.toString().split(",");
+//			double si = Double.parseDouble(valueMovieID[1]);
+//			context.write(new Text(key.get() + "," + valueMovieID[0]),new DoubleWritable(si));
+//		}
 	}
 
 
 	private void getTestData(){
-		testRatings = new HashMap<Integer, List<Integer>>();
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(TEST_DATA));
@@ -120,14 +140,16 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 	}
 	
 	private void getSimilarityData(){
-		similarities = new HashMap<Integer, List<Pair<Integer, Double>>>();
 		for(int x=0; x<SIM_DATA.length; x++){
 			String filename = SIM_DATA[x];
 			BufferedReader br = null;
 			try {
+				System.out.println("reading filename");
 				br = new BufferedReader(new FileReader(filename));
 				String currLine;
+				int count = 0;
 				while ((currLine = br.readLine()) != null) {
+					count++;
 					String[] split = currLine.split("\t");
 					if (split.length == 2) {
 						String[] ids = split[0].split(",");
@@ -140,7 +162,6 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 							similarities.put(movie1, new ArrayList<Pair<Integer, Double>>());
 							similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
 						}
-						
 					}
 				}
 			}

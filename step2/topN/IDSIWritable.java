@@ -73,5 +73,8 @@ public class IDSIWritable implements WritableComparable<IDSIWritable> {
 	public void setSI(double SI) {
 		this.SI = SI;
 	}
-
+	
+	public String toString() {
+		return movieID + "," + SI;
+	}
 }
