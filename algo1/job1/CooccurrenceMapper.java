@@ -13,6 +13,8 @@ import java.util.HashMap;
 
 public class CooccurrenceMapper extends Mapper<LongWritable, Text, IDCompositeWritable, IDStatsWritable> {
 	
+	IDCompositeWritable keyOut = new IDCompositeWritable();
+	IDStatsWritable valOut = new IDStatsWritable();
 
 	private static final String SIDE_DATA = "stats.txt";
 
@@ -67,7 +69,15 @@ public class CooccurrenceMapper extends Mapper<LongWritable, Text, IDCompositeWr
 			int numSI = stats.get(movieID).getFirst();
 			double sumSI = stats.get(movieID).getSecond();
 			
-			context.write(new IDCompositeWritable(movieID, userID), new IDStatsWritable(userID, SI, sumSI, numSI));
+			keyOut.setMovieid(movieID);
+			keyOut.setUserid(userID);
+			
+			valOut.setId(movieID);
+			valOut.setSI(SI);
+			valOut.setSumSI(sumSI);
+			valOut.setNumSI(numSI);
+			
+			context.write(keyOut, valOut);
 		}
 	}
 }

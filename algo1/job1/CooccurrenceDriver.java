@@ -7,6 +7,7 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -36,14 +37,17 @@ public class CooccurrenceDriver extends Configured implements Tool {
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    
 	    job.setMapperClass(CooccurrenceMapper.class);
+	    job.setReducerClass(CooccurrenceReducer.class);
 	    
 	    job.setPartitionerClass(IDPartitioner.class);
 	    
 	    job.setGroupingComparatorClass(IDGroupingComparator.class);
-	    job.setSortComparatorClass(IDSortComparator.class);
+	    
+	    job.setMapOutputKeyClass(IDCompositeWritable.class);
+	    job.setMapOutputValueClass(IDStatsWritable.class);
 	    
 	    job.setOutputKeyClass(IDPairWritable.class);
-	    job.setOutputValueClass(DoubleWritable.class);
+	    job.setOutputValueClass(Text.class);
 
 	    boolean success = job.waitForCompletion(true);
 	    return success ? 0 : 1;

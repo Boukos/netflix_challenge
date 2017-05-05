@@ -40,6 +40,23 @@ public class IDPairWritable implements WritableComparable<IDPairWritable> {
 		}
 		return dif1;
 	}
+	
+	@Override
+	public int hashCode() {
+		return movieID1 ^ movieID2;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof IDPairWritable)) {
+			return false;
+		}
+		IDPairWritable other = (IDPairWritable)o;
+		
+		// ignore order
+		return (movieID1 == other.getMovieID1()) && (movieID2 == other.getMovieID2())
+				|| (movieID1 == other.getMovieID2()) && (movieID2 == other.getMovieID1());
+	}
 
 	public int getMovieID1() {
 		return movieID1;

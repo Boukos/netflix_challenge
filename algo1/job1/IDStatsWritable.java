@@ -8,6 +8,8 @@ public class IDStatsWritable extends StatsWritable {
 	
 	private int id;
 	
+	public IDStatsWritable() { }
+	
 	public IDStatsWritable(int id, double SI, double sumSI, int numSI) {
 		super(SI, sumSI, numSI);
 		this.id = id;
@@ -22,7 +24,7 @@ public class IDStatsWritable extends StatsWritable {
 	@Override
 	public void write(DataOutput out) throws IOException {
 		super.write(out);
-		out.write(id);
+		out.writeInt(id);
 	}
 
 	public int getId() {
