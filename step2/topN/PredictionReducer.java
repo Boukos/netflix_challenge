@@ -56,22 +56,30 @@ public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPair
 			for (Integer movieID: targets){
 				double num = 0;
 				double denom = 0;
-				for(Pair<Integer, Double> simPair: similarities.get(movieID)){
-					simHeap.add(simPair);
-					if (simHeap.size() > N) simHeap.remove();
-				}
-				//Now we have a top 30 list for simHeap 
-				
-				
-				for (IDSIWritable idsi: values){
-					for (Pair<Integer, Double> simPair: simHeap){
-						if (idsi.movieID == simPair.getFirst()){ //user has rated this similar movie
-							num += simPair.getSecond() * idsi.SI; //add weighted index params
-							denom += simPair.getSecond();
+				if(similarities.get(movieID)==null){
+					context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(0));
+				}else{
+					for(Pair<Integer, Double> simPair: similarities.get(movieID)){
+						simHeap.add(simPair);
+						if (simHeap.size() > N) simHeap.remove();
+					}
+					//Now we have a top 30 list for simHeap 
+					
+					
+					for (IDSIWritable idsi: values){
+						for (Pair<Integer, Double> simPair: simHeap){
+							if (idsi.movieID == simPair.getFirst()){ //user has rated this similar movie
+								num += simPair.getSecond() * idsi.SI; //add weighted index params
+								denom += simPair.getSecond();
+							}
 						}
 					}
+					if(denom==0){
+						num=0;
+						denom=1;
+					}
+					context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(num/denom));
 				}
-				context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(num/denom));
 			}
 		}
 	}
