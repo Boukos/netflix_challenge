@@ -37,6 +37,19 @@ public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, I
 			}
 		});
 		
+		/*
+		for (IDStatsWritable i: vals) {
+			keyOut.setMovieID1(i.getId());
+			keyOut.setMovieID2(0);
+			valOut.set(
+					i.getSI()
+					+ "," + i.getSumSI()
+					+ "," + i.getNumSI());
+			context.write(keyOut, valOut);
+		}
+		*/
+		
+		System.out.println(vals.size());
 		for (int i = 0; i < vals.size(); i++) {
 			for (int j = i + 1; j < vals.size(); j++) {
 				IDStatsWritable w1 = vals.get(i);
