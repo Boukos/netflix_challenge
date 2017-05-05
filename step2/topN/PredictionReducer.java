@@ -4,39 +4,74 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 import org.apache.hadoop.io.DoubleWritable;
-import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import algo1.job1.IDPairWritable;
 import algo1.job1.Pair;
 
 /**
  * This is the SumReducer class from the word count exercise.
  */ 
-public class PredictionReducer extends Reducer<LongWritable, IDSIWritable, LongWritable, DoubleWritable> {
+public class PredictionReducer extends Reducer<IntWritable, IDSIWritable, IDPairWritable, DoubleWritable> {
 
-
-	private Map<Integer, List<Integer>> testRatings;
-	private Map<Integer, Map<Integer, Double>> similarities;
+	private static int N = 30;
 	private static String TEST_DATA = "testMat.txt";
 	private static String SIM_DATA = "similarityMat.txt";
-	@Override
-	public void reduce(LongWritable key, Iterable<IDSIWritable> values, Context context)
-			throws IOException, InterruptedException {
+	
+	
+	private Comparator<Pair<Integer, Double>> comp = new Comparator<Pair<Integer, Double>>(){
 
-
-
-		long count = 0;
-		double sum = 0;
-		for (DoubleWritable value : values) {
-			sum += value.get();
-			count++;
+		@Override
+		public int compare(Pair<Integer, Double> o1, Pair<Integer, Double> o2) {
+			return (int)Math.round(o1.getSecond()*100 - o2.getSecond()*100);
 		}
-		context.write(key, new DoubleWritable(sum/count));
+		
+	};
+	private PriorityQueue<Pair<Integer,Double>> simHeap = new PriorityQueue<Pair<Integer,Double>>(N, comp);
+	private Map<Integer, List<Integer>> testRatings;
+	private Map<Integer, List<Pair<Integer, Double>>> similarities;
+	
+	protected void setup(Context context) throws IOException, InterruptedException {
+      getTestData();
+      getSimilarityData();
+    }
+	
+	@Override
+	public void reduce(IntWritable key, Iterable<IDSIWritable> values, Context context)
+			throws IOException, InterruptedException {
+		simHeap.clear();
+		//key is the user 
+		//values are the movies that user has rated
+		List<Integer> targets = testRatings.get(key);
+		for (Integer movieID: targets){
+			double num = 0;
+			double denom = 0;
+			for(Pair<Integer, Double> simPair: similarities.get(movieID)){
+				simHeap.add(simPair);
+				if (simHeap.size() > N) simHeap.remove();
+			}
+			//Now we have a top 30 list for simHeap 
+			
+			
+			for (IDSIWritable idsi: values){
+				for (Pair<Integer, Double> simPair: simHeap){
+					if (idsi.movieID == simPair.getFirst()){ //user has rated this similar movie
+						num += simPair.getSecond() * idsi.SI; //add weighted index params
+						denom += simPair.getSecond();
+					}
+				}
+			}
+			context.write(new IDPairWritable(key.get(), movieID), new DoubleWritable(num/denom));
+		}
+		
 	}
 
 
@@ -75,7 +110,7 @@ public class PredictionReducer extends Reducer<LongWritable, IDSIWritable, LongW
 	}
 	
 	private void getSimilarityData(){
-		similarities = new HashMap<Integer, Map<Integer, Double>>();
+		similarities = new HashMap<Integer, List<Pair<Integer, Double>>>();
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(SIM_DATA));
@@ -88,10 +123,10 @@ public class PredictionReducer extends Reducer<LongWritable, IDSIWritable, LongW
 					int movie2 = Integer.parseInt(ids[1]);
 					double sim = Double.parseDouble(split[1]);
 					if (similarities.containsKey(movie1)){
-						similarities.get(movie1).put(movie2, sim);
+						similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
 					} else {
-						similarities.put(movie1, new HashMap<Integer, Double>());
-						similarities.get(movie1).put(movie2, sim);
+						similarities.put(movie1, new ArrayList<Pair<Integer, Double>>());
+						similarities.get(movie1).add(new Pair<Integer, Double>(movie2, sim));
 					}
 					
 				}
