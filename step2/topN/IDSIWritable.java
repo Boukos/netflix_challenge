@@ -6,6 +6,10 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.WritableComparable;
 
+/*
+ * custom writable for pair of movie id and specific interaction
+ */
+
 public class IDSIWritable implements WritableComparable<IDSIWritable> {
 	
 	int movieID;

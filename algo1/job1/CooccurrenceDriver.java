@@ -15,6 +15,12 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+/*
+ * Cooccurrence Driver -- computes coocurence for movies (uses side data in mapper)
+ *  Input:  (user_id, item_id, stats) 
+ *  Output ((item_id, item_id), (stats1, stats2))
+ */
+
 public class CooccurrenceDriver extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		 int exitCode = ToolRunner.run(new Configuration(), new CooccurrenceDriver(), args);
@@ -36,11 +42,7 @@ public class CooccurrenceDriver extends Configured implements Tool {
 		Job job = new Job(conf);
 		job.setJarByClass(CooccurrenceDriver.class);
 	    job.setJobName("Compute co-occurrence of movies");
-	    /*
-	    job.setPartitionerClass(IDPartitioner.class);
-	    
-	    job.setGroupingComparatorClass(IDGroupingComparator.class);
-	    */
+
 	    FileInputFormat.setInputPaths(job, new Path(args[0]));
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    

@@ -30,24 +30,11 @@ public class CooccurrenceReducer extends Reducer<IntWritable, IDStatsWritable, I
 			vals.add(new IDStatsWritable(i.getId(), i.getSI(), i.getSumSI(), i.getNumSI()));
 		}
 		
-		
 		Collections.sort(vals, new Comparator<IDStatsWritable>() {
 			public int compare(IDStatsWritable w1, IDStatsWritable w2) {
 				return w1.getId() - w2.getId();
 			}
 		});
-		
-		/*
-		for (IDStatsWritable i: vals) {
-			keyOut.setMovieID1(i.getId());
-			keyOut.setMovieID2(0);
-			valOut.set(
-					i.getSI()
-					+ "," + i.getSumSI()
-					+ "," + i.getNumSI());
-			context.write(keyOut, valOut);
-		}
-		*/
 		
 		System.out.println(vals.size());
 		for (int i = 0; i < vals.size(); i++) {

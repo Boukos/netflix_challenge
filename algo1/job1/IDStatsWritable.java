@@ -4,6 +4,10 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+/*
+ * Custom writable with user id and stats
+ */
+
 public class IDStatsWritable extends StatsWritable {
 	
 	private int id;

@@ -19,7 +19,7 @@ import algo1.job1.IDPairWritable;
 import algo1.job1.Pair;
 
 /**
- * This is the SumReducer class from the word count exercise.
+ * Prediction Reducer
  */ 
 public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWritable> {
 
@@ -44,52 +44,18 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 	public void setup(Context context) throws IOException, InterruptedException {
       getTestData();
       getSimilarityData();
-      
-//      for (Integer key: similarities.keySet()){
-//    	  if(key%2==1){
-//    		  System.out.println("KEY: " + key);
-//    	  }
-//    	  if (key == 1333){
-//    		  List<Pair<Integer, Double>> keyset = similarities.get(key);
-//        	  for (Pair<Integer, Double> pair: keyset){
-//        		  System.out.println("Key: " + key + "Movie: " + pair.getFirst() + " SI: " + pair.getSecond());
-//        	  }
-//    	  }
-//
-//      }
     }
 	
 	@Override
 	public void reduce(IntWritable key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
-		
-		//key is the user 
-		//values are the movies that user has rated
-		//System.out.println("Key: " + key.get());
+
 		if(testRatings.get(key.get())!=null){
 			List<Integer> targets = testRatings.get(key.get());
-			//System.out.println(key.get());
 			for (Integer movieID: targets){
 				simHeap.clear();
-				//System.out.println("Target movie: " + movieID);
 				double num = 0;
 				double denom = 0;
-				/*if(key.get()==1333){
-					System.out.println("FOR KEY 1333");
-				for (Integer key1: similarities.keySet()){
-			    	  if(key1%2==1){
-			    		  System.out.println("KEY: " + key1);
-			    	  }
-			    	  if (key1 == 1333){
-			    		  List<Pair<Integer, Double>> keyset = similarities.get(key1);
-			        	  for (Pair<Integer, Double> pair: keyset){
-			        		  System.out.println("Key: " + key1 + "Movie: " + pair.getFirst() + " SI: " + pair.getSecond());
-			        	  }
-			    	  }
-
-			      }
-				}*/
-				//System.out.println("Movie ID: " + movieID);
 				if(similarities.get(movieID)==null){
 					System.out.println("similarities is null");
 					context.write(new Text(key.get() + "," + movieID), new DoubleWritable(0));
@@ -100,20 +66,7 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 							simHeap.remove();
 						}
 					}
-					/*if (key.get() == 1333){
-						for (Pair<Integer, Double> pair: simHeap){
-							System.out.println(pair.getFirst() + " " + pair.getSecond());
-						}
-						System.out.println();
-						System.out.println();
-						System.out.println();
-						System.out.println();
-						System.out.println();
-						
-					}*/
-					//Now we have a top 30 list for simHeap 
-					
-					
+
 					for (Text value: values){
 						String [] splitData = value.toString().split(",");
 						int movID = Integer.parseInt(splitData[0]);
@@ -125,7 +78,6 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 							}
 						}
 					}
-					//System.out.println("NUM,DENOM: " + num + " " + denom);
 					if(denom==0){
 						num=0;
 						denom=1;
@@ -134,12 +86,6 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 				}
 			}
 		}
-		
-//		for (Text value: values){
-//			String [] valueMovieID = value.toString().split(",");
-//			double si = Double.parseDouble(valueMovieID[1]);
-//			context.write(new Text(key.get() + "," + valueMovieID[0]),new DoubleWritable(si));
-//		}
 	}
 
 
@@ -159,7 +105,6 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 						testRatings.put(userid, new ArrayList<Integer>());
 						testRatings.get(userid).add(movieid);
 					}
-					
 				}
 			}
 		}
@@ -213,8 +158,6 @@ public class PredictionReducer extends Reducer<IntWritable, Text, Text, DoubleWr
 					e.printStackTrace();
 				}
 			}
-		
 		}
-
 	}
 }

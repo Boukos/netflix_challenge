@@ -11,6 +11,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+
 public class AvgDriver extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		 int exitCode = ToolRunner.run(new Configuration(), new AvgDriver(), args);

@@ -6,6 +6,10 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
+/*
+ * Custom stats writable with Specific Interaction, sum of SI, and number of SI
+ */
+
 public class StatsWritable implements Writable {
 	
 	double SI;

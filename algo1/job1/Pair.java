@@ -1,5 +1,9 @@
 package algo1.job1;
 
+/*
+ * Pair class that acts as a tuple
+ */
+
 public class Pair<T, U> {
 	
 	private T first;

@@ -16,6 +16,12 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+/*
+ * Similarity Driver -- computes pearson correlation given cooccurences
+ *  Input: ((item_id, item_id), (stats1, stats2))
+ *  Output ((item_id, item_id), similarity)
+ */
+
 public class SimilarityDriver extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		 int exitCode = ToolRunner.run(new Configuration(), new SimilarityDriver(), args);

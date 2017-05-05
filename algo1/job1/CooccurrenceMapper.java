@@ -70,11 +70,6 @@ public class CooccurrenceMapper extends Mapper<LongWritable, Text, IntWritable, 
 			int numSI = stats.get(movieID).getFirst();
 			double sumSI = stats.get(movieID).getSecond();
 			
-			/*
-			keyOut.setMovieid(movieID);
-			keyOut.setUserid(userID);
-			*/
-			
 			keyOut.set(userID);
 			
 			valOut.setId(movieID);

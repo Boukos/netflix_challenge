@@ -21,6 +21,14 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+/*
+ * Prediction Driver -- predict ratings (filter by the test ratings we need to analyze) using similarities for movie pairs 
+ * 		and (side data uses similarity files and test ratings file)
+ *  Input: (itemid, userid, rating)
+ *  Output: (userid, itemid, rating) -- these outputted values are predictions that aren't present in original matrix
+ */
+
+
 public class PredictionDriver extends Configured implements Tool {
 	public static void main(String[] args) throws Exception {
 		 int exitCode = ToolRunner.run(new Configuration(), new PredictionDriver(), args);
