@@ -1,10 +1,13 @@
 package algo1.job1;
 
+import java.net.URI;
+
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
@@ -28,7 +31,7 @@ public class CooccurrenceDriver extends Configured implements Tool {
 		
 		// separate key/value with comma instead of default tab in output file
 		Configuration conf = getConf();
-		//conf.set("mapred.textoutputformat.separator", ",");
+		conf.set("mapred.textoutputformat.separator", ",");
 		
 		Job job = new Job(conf);
 		job.setJarByClass(CooccurrenceDriver.class);
@@ -42,12 +45,6 @@ public class CooccurrenceDriver extends Configured implements Tool {
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    
 	    job.setMapperClass(CooccurrenceMapper.class);
-	    /*
-	    job.setNumReduceTasks(0);
-	    job.setOutputKeyClass(IntWritable.class);
-	    job.setOutputValueClass(IDStatsWritable.class);
-	    */
-	    
 	    job.setReducerClass(CooccurrenceReducer.class);
 	    
 	    job.setMapOutputKeyClass(IntWritable.class);
@@ -56,6 +53,7 @@ public class CooccurrenceDriver extends Configured implements Tool {
 	    job.setOutputKeyClass(IDPairWritable.class);
 	    job.setOutputValueClass(Text.class);
 	    
+	    DistributedCache.addCacheFile(new URI("s3n://netflix-final-project-sp17/stats.txt#stats.txt"), job.getConfiguration());
 
 	    boolean success = job.waitForCompletion(true);
 	    return success ? 0 : 1;

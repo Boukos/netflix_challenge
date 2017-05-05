@@ -2,6 +2,7 @@ package algo1.job2;
 
 
 import algo1.job1.StatsWritable;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -10,8 +11,8 @@ import org.apache.hadoop.io.WritableComparable;
 
 public class StatsPairWritable implements WritableComparable<StatsPairWritable> {
 	
-	StatsWritable stats1;
-	StatsWritable stats2;
+	StatsWritable stats1 = new StatsWritable();
+	StatsWritable stats2 = new StatsWritable();
 	
 	public StatsPairWritable() {
 		
@@ -65,6 +66,10 @@ public class StatsPairWritable implements WritableComparable<StatsPairWritable> 
 
 	public void setStats2(StatsWritable stats2) {
 		this.stats2 = stats2;
+	}
+	
+	public String toString() {
+		return stats1 + "," + stats2;
 	}
 
 }

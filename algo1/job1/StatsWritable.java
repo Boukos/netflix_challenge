@@ -59,5 +59,9 @@ public class StatsWritable implements Writable {
 	public void setNumSI(int numSI) {
 		this.numSI = numSI;
 	}
+	
+	public String toString() {
+		return getSI() + "," + getSumSI() + "," + getNumSI();
+	}
 
 }
