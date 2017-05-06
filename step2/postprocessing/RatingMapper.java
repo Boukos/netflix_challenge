@@ -25,7 +25,7 @@ private static final String[] FILES = {"avg_movie_ratings.txt", "avg_user_rating
 	private final Text valOut = new Text();
 	
 	// computed in pig script
-	private double overallAvg = 3.481187595074204;
+	private double overallAvg = 3.481186276307742;
 	
 	@Override
 	public void setup(Context context) {
